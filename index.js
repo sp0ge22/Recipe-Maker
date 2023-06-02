@@ -3,7 +3,6 @@ const bodyParser = require('body-parser');
 const app = express();
 
 const axios = require('axios');
-require('dotenv').config(); // Load environment variables from .env file
 
 // Parse JSON bodies (as sent by API clients)
 app.use(express.json());
@@ -13,14 +12,17 @@ app.post('/', async (req, res) => {
     console.log('Received form data:', { mealName, dietRestrictions, peopleToFeed });
 
     // Prepare the prompt for the OpenAI API
-    const prompt = `Create a recipe for a ${mealName} meal, suitable for ${peopleToFeed} people, with the following dietary restrictions: ${dietRestrictions}.`;
+    const prompt = `Create a recipe for a ${mealName} meal, suitable for ${peopleToFeed} people, with the following dietary restrictions: ${dietRestrictions}. Add recommendations for substitutions for some ingredients, if possible.`;
 
     try {
         // Pass the information to the OpenAI API
-        const gpt3Response = await axios.post('https://api.openai.com/v1/completions', {
-            model: 'text-davinci-003',
-            prompt: prompt,
-            max_tokens: 500,
+        console.log(prompt); // Log the prompt
+        const gpt4Response = await axios.post('https://api.openai.com/v1/chat/completions', {
+            model: 'gpt-3.5-turbo',
+            messages: [{
+                role: 'user',
+                content: prompt,
+            }],
         }, {
             headers: {
                 'Content-Type': 'application/json',
@@ -29,9 +31,10 @@ app.post('/', async (req, res) => {
         });
 
         // Extract the generated text and send it as a response
-        const recipe = gpt3Response.data.choices[0].text.trim();
+        const recipe = gpt4Response.data.choices[0].message.content.trim();
+        const total_tokens = gpt4Response.data.usage.total_tokens; // Extract total tokens used
         console.log('Recipe generated:', recipe);
-        res.json({ recipe });
+        res.json({ recipe, total_tokens }); // Send both recipe and total tokens
 
     } catch(err) {
         console.error(err);

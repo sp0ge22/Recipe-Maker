@@ -5,23 +5,32 @@
 </head>
 <body>
     <header>
-        <h1>Recipe Generator</h1>
+        <h1>Recipe Generator </h1>
     </header>
-    <div class="container">
-        <form id="recipeForm">
-            <div class="input-container">
-                <input type="text" id="mealName" placeholder="Meal Name">
-            </div>
-            <div class="input-container">
-                <input type="text" id="dietRestrictions" placeholder="Dietary Restrictions">
-            </div>
-            <div class="input-container">
-                <input type="number" id="peopleToFeed" placeholder="People to Feed">
-            </div>
-            <button type="submit">Generate Recipe</button>
-        </form>
+    <div class="main-container">
+        <div class="recipe-container">
+            <form id="recipeForm">
+                <div class="input-container">
+                    <input type="text" id="mealName" placeholder="Meal Name" required>
+                </div>
+                <div class="input-container">
+                    <input type="text" id="dietRestrictions" placeholder="Dietary Restrictions" required>
+                </div>
+                <div class="input-container">
+                    <input type="number" id="peopleToFeed" placeholder="People to Feed" required>
+                </div>
+                <div class="button-container">
+                    <button type="submit" id="generateButton">
+                        <span class="generate-text">Generate Recipe</span>
+                    </button>
+                    <span class="loader"></span>
+                </div>
+            </form>
+        </div>
+        <div class="result-container" id="resultContainer">
+            <div id="recipeResult"></div>
+        </div>
     </div>
-    <div id="recipeResult"></div>
     <script src="script.js"></script>
 </body>
 </html>
