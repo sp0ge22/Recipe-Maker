@@ -1,3 +1,6 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
@@ -17,25 +20,28 @@ app.post('/', async (req, res) => {
     try {
         // Pass the information to the OpenAI API
         console.log(prompt); // Log the prompt
-        const gpt4Response = await axios.post('https://api.openai.com/v1/chat/completions', {
+        const data = {
             model: 'gpt-3.5-turbo',
             messages: [{
                 role: 'user',
                 content: prompt,
             }],
-        }, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}` // Use the API key from the .env file
-            }
-        });
-
+        };
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}` // Use the API key from the .env file
+        };
+        const url = 'https://api.openai.com/v1/chat/completions';
+        console.log('Sending API request:', { url, data, headers }); // Log the data, headers, and url.
+    
+        const gpt4Response = await axios.post(url, data, { headers });
+    
         // Extract the generated text and send it as a response
         const recipe = gpt4Response.data.choices[0].message.content.trim();
         const total_tokens = gpt4Response.data.usage.total_tokens; // Extract total tokens used
         console.log('Recipe generated:', recipe);
         res.json({ recipe, total_tokens }); // Send both recipe and total tokens
-
+    
     } catch(err) {
         console.error(err);
         res.status(500).json({ message: "Error generating recipe" });
